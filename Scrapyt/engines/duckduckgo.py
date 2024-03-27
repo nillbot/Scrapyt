@@ -12,17 +12,17 @@ class DuckDuckGoScraper:
         self.logger = self._setup_logger()
         self.driver = self._initialize_driver(browser)
 
-    def _initialize_driver(self, browser):
-        try:
-            if browser.lower() == "chrome":
-                return webdriver.Chrome()
-            elif browser.lower() == "firefox":
-                return webdriver.Firefox()
-            else:
-                raise ValueError("Unsupported browser. Please specify 'chrome' or 'firefox'.")
-        except Exception as e:
-            self.logger.error(f"Error initializing WebDriver: {e}")
-            raise
+def _initialize_driver(self, browser):
+    try:
+        if browser.lower() == "chrome":
+            return webdriver.Chrome()
+        elif browser.lower() == "firefox":
+            return webdriver.Firefox()
+        else:
+            raise ValueError("Unsupported browser. Please specify 'chrome' or 'firefox'.")
+    except Exception as e:
+        self.logger.error(f"Error initializing WebDriver: {e}")
+        return None
 
     def _setup_logger(self):
         logger = logging.getLogger(__name__)
