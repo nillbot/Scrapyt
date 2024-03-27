@@ -9,8 +9,8 @@ class DuckDuckGoScraper:
     def __init__(self, browser="Firefox", query="site:github.com inurl:/nillbot", timeout=10):
         self.query = query
         self.timeout = timeout
-        self.driver = self._initialize_driver(browser)
         self.logger = self._setup_logger()
+        self.driver = self._initialize_driver(browser)
 
     def _initialize_driver(self, browser):
         try:
