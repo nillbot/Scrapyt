@@ -1,4 +1,5 @@
 import logging
+import time
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -75,6 +76,7 @@ class DuckDuckGoScraper:
             exit()
 
     def extract_links(self):
+        time.sleep(1)
         try:
             link_elements = self.driver.find_elements(By.XPATH, "//a[@data-testid='result-extras-url-link']")
             extracted_links = [link_element.get_attribute("href") for link_element in link_elements]
