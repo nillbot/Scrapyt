@@ -7,24 +7,27 @@ class DuckDuckGoScraper:
     
     def __init__(self, browser="Firefox", query="site:github.com inurl:/nillbot"):
         self.query = query
-        if browser == "Chrome":
-            self.driver = webdriver.Chrome()
-        else:
-            self.driver = webdriver.Firefox()
+        self.driver = self._initialize_driver(browser)
 
-    def scrape(self, pages):
-        self.search()
+    def _initialize_driver(self, browser):
+        if browser == "Chrome":
+            return webdriver.Chrome()
+        else:
+            return webdriver.Firefox()
+
+    def perform_search(self, pages):
+        self._search()
         if pages == 1:
-            self.scroll
+            self._scroll()
         else:
             for _ in range(pages-1):
-                self.scroll()
-                self.load_more_results()
-                self.wait_until_page_loaded()
+                self._scroll()
+                self._load_more_results()
+                self._wait_until_page_loaded()
 
-            self.scroll()
+            self._scroll()
 
-    def search(self):
+    def _search(self):
         url = f"https://duckduckgo.com/?q={self.query}"
         self.driver.get(url)
 
@@ -33,13 +36,13 @@ class DuckDuckGoScraper:
         extracted_links = [link_element.get_attribute("href") for link_element in link_elements]
         return extracted_links
     
-    def wait_until_page_loaded(self):
+    def _wait_until_page_loaded(self):
         WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, "//button[not(@disabled='')]")))
     
-    def scroll(self):
+    def _scroll(self):
         self.driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
 
-    def load_more_results(self):
+    def _load_more_results(self):
         try:
             button = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, "//button[@id='more-results']")))
             button.click()
