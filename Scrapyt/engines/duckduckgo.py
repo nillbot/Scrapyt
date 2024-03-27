@@ -10,7 +10,7 @@ class DuckDuckGoScraper:
         self.driver = self._initialize_driver(browser)
 
     def _initialize_driver(self, browser):
-        if browser == "Chrome":
+        if browser.lower == "chrome":
             return webdriver.Chrome()
         else:
             return webdriver.Firefox()
