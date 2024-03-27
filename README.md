@@ -13,7 +13,7 @@ from Scrapyt.engines.duckduckgo import DuckDuckGoScraper
 scraper = DuckDuckGoScraper(browser="Firefox", query="python")
 
 # Scrape search results for 2 pages.
-scraper.scrape_search_results(pages=2)
+scraper.perform_search(pages=2)
 
 # Extract links from the scraped search results.
 links = scraper.extract_links()
