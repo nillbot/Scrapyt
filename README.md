@@ -24,3 +24,4 @@ for link in links:
 
 # Close the WebDriver session.
 scraper.close()
+```
