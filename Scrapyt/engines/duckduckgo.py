@@ -1,5 +1,5 @@
-import logging
 import time
+from Scrapyt.logger import _setup_logger
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -10,7 +10,7 @@ class DuckDuckGoScraper:
     def __init__(self, browser="Firefox", query="site:github.com inurl:/nillbot", timeout=10):
         self.query = query
         self.timeout = timeout
-        self.logger = self._setup_logger()
+        self.logger = _setup_logger()
         self.driver = self._initialize_driver(browser)
 
     def _initialize_driver(self, browser):
@@ -25,20 +25,13 @@ class DuckDuckGoScraper:
             self.logger.error(f"Error initializing WebDriver: {e}")
             exit()
 
-    def _setup_logger(self):
-        logger = logging.getLogger(__name__)
-        logger.setLevel(logging.INFO)
-        formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
-        ch = logging.StreamHandler()
-        ch.setFormatter(formatter)
-        logger.addHandler(ch)
-        return logger
-
-    def _wait_until_more_results_loaded(self):
+    def _search(self):
         try:
-            WebDriverWait(self.driver, self.timeout).until(EC.presence_of_element_located((By.XPATH, "//button[not(@disabled='')]")))
-        except TimeoutException:
-            self.logger.warning("Timed out waiting for more results to load")
+            url = f"https://duckduckgo.com/?q={self.query}"
+            self.driver.get(url)
+        except Exception as e:
+            self.logger.error(f"Error navigating to search page: {e}")
+            exit()
 
     def _scroll(self):
         self.driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
@@ -51,7 +44,23 @@ class DuckDuckGoScraper:
             self.logger.warning("Timed out waiting for 'Load More' button")
         except NoSuchElementException:
             self.logger.warning("'Load More' button not found")
+    
+    def _wait_until_more_results_loaded(self):
+        try:
+            WebDriverWait(self.driver, self.timeout).until(EC.presence_of_element_located((By.XPATH, "//button[not(@disabled='')]")))
+        except TimeoutException:
+            self.logger.warning("Timed out waiting for more results to load")
 
+    def extract_links(self):
+        time.sleep(1)
+        try:
+            link_elements = self.driver.find_elements(By.XPATH, "//a[@data-testid='result-extras-url-link']")
+            extracted_links = [link_element.get_attribute("href") for link_element in link_elements]
+            return extracted_links
+        except Exception as e:
+            self.logger.error(f"Error extracting links: {e}")
+            exit()
+    
     def perform_search(self, pages):
         try:
             self._search()
@@ -67,26 +76,9 @@ class DuckDuckGoScraper:
             self.logger.error(f"Error performing search: {e}")
             exit()
 
-    def _search(self):
-        try:
-            url = f"https://duckduckgo.com/?q={self.query}"
-            self.driver.get(url)
-        except Exception as e:
-            self.logger.error(f"Error navigating to search page: {e}")
-            exit()
-
-    def extract_links(self):
-        time.sleep(1)
-        try:
-            link_elements = self.driver.find_elements(By.XPATH, "//a[@data-testid='result-extras-url-link']")
-            extracted_links = [link_element.get_attribute("href") for link_element in link_elements]
-            return extracted_links
-        except Exception as e:
-            self.logger.error(f"Error extracting links: {e}")
-            exit()
-
     def close(self):
         try:
             self.driver.quit()
         except Exception as e:
             self.logger.error(f"Error closing WebDriver: {e}")
+            raise
