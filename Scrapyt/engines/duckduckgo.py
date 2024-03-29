@@ -1,10 +1,10 @@
 import time
-from Scrapyt.logger import _setup_logger
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
+from Scrapyt.logger import _setup_logger
 
 class DuckDuckGoScraper:
     def __init__(self, browser="Firefox", query="site:github.com inurl:/nillbot", timeout=10):
@@ -25,6 +25,20 @@ class DuckDuckGoScraper:
             self.logger.error(f"Error initializing WebDriver: {e}")
             exit()
 
+    def perform_search(self, pages):
+        try:
+            self._search()
+            if pages == 1:
+                self._scroll()
+            else:
+                for _ in range(pages-1):
+                    self._scroll()
+                    self._load_more_results()
+                    self._wait_until_more_results_loaded()
+        except Exception as e:
+            self.logger.error(f"Error performing search: {e}")
+            exit()
+    
     def _search(self):
         try:
             url = f"https://duckduckgo.com/?q={self.query}"
@@ -54,26 +68,12 @@ class DuckDuckGoScraper:
     def extract_links(self):
         time.sleep(1)
         try:
+            self._scroll()
             link_elements = self.driver.find_elements(By.XPATH, "//a[@data-testid='result-extras-url-link']")
             extracted_links = [link_element.get_attribute("href") for link_element in link_elements]
             return extracted_links
         except Exception as e:
             self.logger.error(f"Error extracting links: {e}")
-            exit()
-    
-    def perform_search(self, pages):
-        try:
-            self._search()
-            if pages == 1:
-                self._scroll()
-            else:
-                for _ in range(pages-1):
-                    self._scroll()
-                    self._load_more_results()
-                    self._wait_until_more_results_loaded()
-                self._scroll()
-        except Exception as e:
-            self.logger.error(f"Error performing search: {e}")
             exit()
 
     def close(self):
