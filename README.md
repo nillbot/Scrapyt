@@ -2,7 +2,7 @@
 
 Scrapyt is a Python library that allows you to scrape various search engines easily. Currently, it supports DuckDuckGo.
 
-# Installation
+## Install
 
 You'll need to install selenium
 
