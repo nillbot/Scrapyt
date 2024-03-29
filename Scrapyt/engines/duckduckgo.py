@@ -55,15 +55,13 @@ class DuckDuckGoScraper:
             button = WebDriverWait(self.driver, self.timeout).until(EC.presence_of_element_located((By.XPATH, "//button[@id='more-results']")))
             button.click()
         except TimeoutException:
-            self.logger.warning("Timed out waiting for 'Load More' button")
-        except NoSuchElementException:
-            self.logger.warning("'Load More' button not found")
+            self.logger.warning("Timed out waiting for 'Load More Results' button. Most probably end of results reached or you set the timeout too low")
     
     def _wait_until_more_results_loaded(self):
         try:
             WebDriverWait(self.driver, self.timeout).until(EC.presence_of_element_located((By.XPATH, "//button[not(@disabled='')]")))
         except TimeoutException:
-            self.logger.warning("Timed out waiting for more results to load")
+            self.logger.warning("Timed out waiting for more results to load. This usually happens when 'more results' button wasn't clicked or you set the timeout too low")
 
     def extract_links(self):
         time.sleep(1)
