@@ -27,7 +27,6 @@ class DuckDuckGoScraper:
             exit()
 
     def perform_search(self, pages):
-        try:
             self._search()
             if pages == 1:
                 self._scroll()
@@ -36,9 +35,6 @@ class DuckDuckGoScraper:
                     self._scroll()
                     self._load_more_results()
                     self._wait_until_more_results_loaded()
-        except Exception as e:
-            self.logger.error(f"Error performing search: {e}")
-            exit()
     
     def _search(self):
         try:
