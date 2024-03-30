@@ -33,8 +33,12 @@ class DuckDuckGoScraper:
             else:
                 for _ in range(pages-1):
                     self._scroll()
-                    self._load_more_results()
-                    self._wait_until_more_results_loaded()
+                    try:
+                        self._load_more_results()
+                        self._wait_until_more_results_loaded()
+                    except MaxResultsReachedException:
+                        self.logger.error("Unable to load more search results, consider increasing timeout if you believe this is wrong")
+                        break
     
     def _search(self):
         try:
