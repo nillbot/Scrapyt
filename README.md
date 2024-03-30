@@ -33,3 +33,23 @@ for link in links:
 # Close the WebDriver session.
 scraper.close()
 ```
+
+* Original Pages present is less than pages i want to scrape
+
+```python
+from Scrapyt.engines.duckduckgo import DuckDuckGoScraper
+from Scrapyt.exceptions import MaxResultsReachedException
+
+scraper = DuckDuckGoScraper(browser="Chrome", query="python")
+
+try:
+    scraper.perform_search(pages=2)
+except MaxResultsReachedException:
+    pass
+
+links = scraper.extract_links()
+for link in links:
+    print(link)
+
+scraper.close()
+```
