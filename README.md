@@ -16,18 +16,20 @@ pip install selenium
 
 ```python
 from Scrapyt.engines.duckduckgo import DuckDuckGoScraper
-from Scrapyt.exceptions import MaxResultsReachedException
 
+# Create an instance of DuckDuckGoScraper, specifying the browser (Firefox) and the search query ("python").
 scraper = DuckDuckGoScraper(browser="Chrome", query="python")
 
-try:
-    scraper.perform_search(pages=2)
-except MaxResultsReachedException:
-    pass
+# Scrape search results for 2 pages.
+scraper.perform_search(pages=2)
 
+# Extract links from the scraped search results.
 links = scraper.extract_links()
+
+# Print each extracted link.
 for link in links:
     print(link)
 
+# Close the WebDriver session.
 scraper.close()
 ```
