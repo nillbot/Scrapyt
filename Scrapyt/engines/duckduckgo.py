@@ -57,7 +57,7 @@ class DuckDuckGoScraper:
             button.click()
         except TimeoutException:
             self.logger.error("Timed out waiting for 'Load More Results' button. Most probably end of results reached or you set the timeout too low")
-            raise MaxResultsReachedException()
+            raise MaxResultsReachedException("End of results reached or you set the timeout too low to wait for more results too load")
     
     def _wait_until_more_results_loaded(self):
         try:
