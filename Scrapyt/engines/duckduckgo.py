@@ -5,6 +5,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
 from Scrapyt.logger import _setup_logger
+from Scrapyt.exceptions import MaxResultsReachedException
 
 class DuckDuckGoScraper:
     def __init__(self, browser="Firefox", query="site:github.com inurl:/nillbot", timeout=10):
@@ -55,14 +56,16 @@ class DuckDuckGoScraper:
             button = WebDriverWait(self.driver, self.timeout).until(EC.presence_of_element_located((By.XPATH, "//button[@id='more-results']")))
             button.click()
         except TimeoutException:
-            self.logger.warning("Timed out waiting for 'Load More Results' button. Most probably end of results reached or you set the timeout too low")
+            self.logger.error("Timed out waiting for 'Load More Results' button. Most probably end of results reached or you set the timeout too low")
+            raise MaxResultsReachedException()
     
     def _wait_until_more_results_loaded(self):
         try:
             WebDriverWait(self.driver, self.timeout).until(EC.presence_of_element_located((By.XPATH, "//button[not(@disabled='')]")))
         except TimeoutException:
-            self.logger.warning("Timed out waiting for more results to load. This usually happens when 'more results' button wasn't clicked or you set the timeout too low")
-
+            self.logger.error("Timed out waiting for more results to load. This usually happens when 'more results' button wasn't clicked or you set the timeout too low")
+            exit()
+            
     def extract_links(self):
         time.sleep(1)
         try:
