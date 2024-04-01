@@ -4,14 +4,14 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
-from Scrapyt.logger import _setup_logger
+from Scrapyt.logger import logger
 from Scrapyt.exceptions import MaxResultsReachedException
 
 class DuckDuckGoScraper:
     def __init__(self, browser="Firefox", query="site:github.com inurl:/nillbot", timeout=10):
         self.query = query
         self.timeout = timeout
-        self.logger = _setup_logger()
+        self.logger = logger._setup_logger()
         self.driver = self._initialize_driver(browser)
 
     def _initialize_driver(self, browser):
@@ -28,17 +28,14 @@ class DuckDuckGoScraper:
 
     def perform_search(self, pages):
             self._search()
-            if pages == 1:
+            for _ in range(pages-1):
                 self._scroll()
-            else:
-                for _ in range(pages-1):
-                    self._scroll()
-                    try:
-                        self._load_more_results()
-                    except MaxResultsReachedException:
-                        self.logger.error("Unable to load more search results, consider increasing timeout if you believe this is wrong")
-                        break
-                        self._wait_until_more_results_loaded()
+                try:
+                    self._load_more_results()
+                except MaxResultsReachedException:
+                    self.logger.error("Unable to load more search results, consider increasing timeout if you believe this is wrong")
+                    break
+                    self._wait_until_more_results_loaded()
     
     def _search(self):
         try:
@@ -63,9 +60,8 @@ class DuckDuckGoScraper:
         try:
             WebDriverWait(self.driver, self.timeout).until(EC.presence_of_element_located((By.XPATH, "//button[not(@disabled='')]")))
         except TimeoutException:
-            self.logger.error("Timed out waiting for more results to load. This usually happens when 'more results' button wasn't clicked or you set the timeout too low")
-            exit()
-            
+            self.logger.warning("Timed out waiting for more results to load. This usually happens when 'more results' button wasn't clicked or you set the timeout too low")
+    
     def extract_links(self):
         time.sleep(1)
         try:
