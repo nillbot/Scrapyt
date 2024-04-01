@@ -25,8 +25,8 @@ class DuckDuckGoScraper:
             self.logger.error(f"Error initializing WebDriver: {e}")
             exit()
 
-    def perform_search(self, pages):
-            self._search()
+    def perform_search(self, query, pages):
+            self._search(query)
             for _ in range(pages-1):
                 self._scroll()
                 try:
