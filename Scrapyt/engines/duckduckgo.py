@@ -8,8 +8,7 @@ from Scrapyt.logger import logger
 from Scrapyt.exceptions import MaxResultsReachedException
 
 class DuckDuckGoScraper:
-    def __init__(self, browser="Firefox", query="site:github.com inurl:/nillbot", timeout=10):
-        self.query = query
+    def __init__(self, browser="Firefox", timeout=10):
         self.timeout = timeout
         self.logger = logger._setup_logger()
         self.driver = self._initialize_driver(browser)
@@ -37,9 +36,9 @@ class DuckDuckGoScraper:
                     break
                     self._wait_until_more_results_loaded()
     
-    def _search(self):
+    def _search(self, query):
         try:
-            url = f"https://duckduckgo.com/?q={self.query}"
+            url = f"https://duckduckgo.com/?q={query}"
             self.driver.get(url)
         except Exception as e:
             self.logger.error(f"Error navigating to search page: {e}")
